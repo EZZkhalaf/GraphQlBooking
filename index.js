@@ -48,22 +48,32 @@ app.use("/api" , graphqlHTTP({
         `) ,
     rootValue : { //resolver
         events : () => {
-            return events
+            Event.find().then( e =>{
+                return e.map(event =>{
+                    return {...event._doc}
+                })
+            }).catch(error => {
+                throw error
+            })
         },
         createEvent: (args) => {
             const eventInput = args.eventInput;
 
-            const event = {
-                _id: Math.random().toString(),
-                title: eventInput.title,
-                description: eventInput.description,
-                price: +eventInput.price,
-                date: eventInput.date
-            };
+            const event = new Event({
+                title : args.eventInput.title ,
+                description : args.eventInput.description ,
+                price : +args.eventInput.price ,  
+                date : new Date(args.eventInput.date) 
+            })
 
-            events.push(event);
+            return event.save().then( r =>{
+                    console.log(r)
+                    return r; 
+                }).catch(e => {
+                    console.log(e)
+                    throw e
+                })
 
-            return event; 
         },
         graphiql : true //will explained later  
     }
