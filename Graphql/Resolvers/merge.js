@@ -55,7 +55,10 @@ const transformBooking = booking  =>{
 }
 
 const transformEvent = (event) => {
-  const data = event._doc || event; // handle both raw Mongoose doc and plain object
+    if (!event) {
+        return null; 
+    }
+  const data = event._doc || event; 
   return {
     ...data,
     _id: event.id || data._id,
