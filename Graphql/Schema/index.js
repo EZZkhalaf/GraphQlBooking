@@ -21,7 +21,7 @@ module.exports = buildSchema (`
           }
 
           type Booking {
-          _id : ID!
+            _id : ID!
             event : Event! 
             user : User!
             createdAt : String!
