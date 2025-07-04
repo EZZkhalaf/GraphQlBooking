@@ -26,7 +26,12 @@ module.exports = {
         }
       },
 
-      createEvent: async ({ eventInput }) => {
+      createEvent: async ({ eventInput } , req) => {
+        //for the validation of the token 
+        if(!req.isAuth){
+            throw new Error("unAuthenticated...")
+        }
+
         if (!eventInput.creator) {
           throw new Error("Missing creator ID");
         }
