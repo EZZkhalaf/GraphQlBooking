@@ -8,14 +8,22 @@ const dotenv = require("dotenv");
 const graphQlSchema = require('./Graphql/Schema/index')
 const graphQlResolvers = require('./Graphql/Resolvers/index')
 const isAuth = require('./middleware/authMiddleware')
-
+const cors = require('cors')
 
 dotenv.config();
 const app = express();
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true 
+}));
+
 app.use(bodyParser.json());
 
 //the middlware for every request for validation of the token 
 app.use(isAuth)
+
+
 
 app.use(
   "/api",

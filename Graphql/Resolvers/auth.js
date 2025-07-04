@@ -24,6 +24,7 @@ module.exports = {
             ...result._doc,
             password: null,
             _id: result.id,
+            message:"created successfully"
           };
         } catch (err) {
           throw err;
