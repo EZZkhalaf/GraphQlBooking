@@ -1,11 +1,13 @@
 import { set } from 'mongoose';
 import React from 'react';
 import { useState } from 'react';
-
+import {useAuthContext} from '../Context/useAuthContext'
 const Auth = () => {
     const [isLogin , setIslogin] = useState(true);
     const [email , setEmail] = useState("");
     const [password , setPassword] = useState("")
+
+    const {login} = useAuthContext();
 
 
     const createAccount = async(e)=>{
@@ -16,7 +18,7 @@ const Auth = () => {
                     mutation {
                         createUser(userInput : {email : "${email}" , password : "${password}"}){
                             _id , 
-                            email
+                            email 
                         }
                     }
                 `
@@ -34,33 +36,43 @@ const Auth = () => {
         }
     }
 
-    const loginAccount = async(e)=>{
-        e.preventDefault()
+    const loginAccount = async (e) => {
+        e.preventDefault();
         try {
             const reqBody = {
-                query:`
-                    query {
-                        login(email : "${email}" , password : "${password}"){
-                            userId , 
-                            token , 
-                            tokenExpiration
-                        }
-                    }
-                `
+            query: `
+                query {
+                login(email: "${email}", password: "${password}") {
+                    userId,
+                    token,
+                    tokenExpiration
+                }
+                }
+            `
+            };
+
+            const response = await fetch("http://localhost:3000/api", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reqBody)
+            });
+
+            const resData = await response.json();
+
+            
+            if (resData.errors && resData.errors.length > 0) {
+            throw new Error(resData.errors[0].message);
             }
-            const response = await fetch("http://localhost:3000/api" , {
-                method : "POST" ,
-                headers : {'Content-Type' : 'application/json'} ,
-                body : JSON.stringify(reqBody)
-            })
 
-            const data = await response.json() ;
-            console.log(data)
+            const { token, userId } = resData.data.login;
+            login(token, userId); // save to context
+            console.log(localStorage.getItem('token'))
         } catch (error) {
-            console.log(error)
+            alert(error.message); 
+            console.error(error);
         }
+    };
 
-    }
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f7f8fa] px-4">
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-8 border border-gray-200">
